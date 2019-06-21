@@ -77,6 +77,7 @@ func (fi *fileInfo) isContentFile() bool {
 	return contentFileExtensionsSet[fi.Ext()]
 }
 
+// TODO(bep) mod remove
 func newFileInfo(sp *source.SourceSpec, fi hugofs.FileMetaInfo, tp bundleDirType) (*fileInfo, error) {
 
 	baseFi, err := sp.NewFileInfo(fi, tp == bundleLeaf)
@@ -91,6 +92,7 @@ func newFileInfo(sp *source.SourceSpec, fi hugofs.FileMetaInfo, tp bundleDirType
 
 	lang := f.Lang()
 
+	// TODO(bep) mod do this ... somewhere else.
 	f.disabled = lang != "" && sp.DisabledLanguages[lang]
 
 	return f, nil

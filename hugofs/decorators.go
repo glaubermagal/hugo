@@ -18,6 +18,8 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/pkg/errors"
+
 	"github.com/spf13/afero"
 )
 
@@ -107,7 +109,7 @@ func NewBaseFileDecorator(fs afero.Fs) afero.Fs {
 			return ffs.open(filename, isSymlink)
 		}
 
-		return decorateFileInfo("fnd", fi, fs, opener, filename, "", meta), nil
+		return decorateFileInfo("fnd", fi, ffs, opener, filename, "", meta), nil
 	}
 
 	ffs.decorate = decorator
@@ -201,15 +203,20 @@ func (l *baseFileDecoratorFile) Readdir(c int) (ofi []os.FileInfo, err error) {
 	fisp := make([]os.FileInfo, len(dirnames))
 
 	for i, dirname := range dirnames {
-		filename := filepath.Join(l.Name(), dirname)
+		filename := dirname
+
+		if l.Name() != "" && l.Name() != filepathSeparator {
+			filename = filepath.Join(l.Name(), dirname)
+		}
+
 		// We need to resolve any symlink info.
 		fi, err := lstatIfPossible(l.fs.Fs, filename)
 		if err != nil {
-			return nil, err
+			return nil, errors.Wrap(err, "lstat")
 		}
 		fi, err = l.fs.decorate(fi, filename)
 		if err != nil {
-			return nil, err
+			return nil, errors.Wrap(err, "decorate")
 		}
 		fisp[i] = fi
 	}

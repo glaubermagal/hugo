@@ -691,7 +691,7 @@ func (th testHelper) replaceDefaultContentLanguageValue(value string) string {
 func newTestCfg() (*viper.Viper, *hugofs.Fs) {
 
 	v := viper.New()
-	fs := hugofs.NewMem(v)
+	fs := hugofs.NewFrom(hugofs.NewBaseFileDecorator(afero.NewMemMapFs()), v)
 
 	v.SetFs(fs.Source)
 

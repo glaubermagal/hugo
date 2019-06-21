@@ -247,3 +247,11 @@ func decorateFileInfo(
 func isSymlink(fi os.FileInfo) bool {
 	return fi != nil && fi.Mode()&os.ModeSymlink == os.ModeSymlink
 }
+
+func fileInfosToFileMetaInfos(fis []os.FileInfo) []FileMetaInfo {
+	fims := make([]FileMetaInfo, len(fis))
+	for i, v := range fis {
+		fims[i] = v.(FileMetaInfo)
+	}
+	return fims
+}
